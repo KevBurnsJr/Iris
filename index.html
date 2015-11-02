@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <meta property="og:image" content="/iris.png" />
+    <title>Iris</title>
+    <style>
+        body { background: #000; padding: 0; margin: 0; overflow: hidden; font-family: arial; font-size: 13px; }
+        #control { position: fixed; left: 0; top: 0; display: block; padding: 15px 20px 10px 15px; background: rgba(0,0,0,0.5); }
+        #control:hover { display: block; }
+        #control label { display: block; color: #fff; clear: right; line-height: 22px; }
+        #control input, #control select { margin-bottom: 10px; width: 60px; float: right; margin-left: 10px; }
+        #control select { width: 80px; }
+        #control a { display: block; border: 3px solid #000; }
+        #control a img { display: block; }
+    </style>
+</head>
+<body>
+<div id="control">
+  <form>
+    <label>Depth: <input name="depth" type="text" id="depth" /></label>
+    <label>Spires: <input name="n" type="text" id="n" /></label>
+    <label>Zoom: <input name="zoom" type="text" id="zoom" /></label>
+    <label>Curl: <input name="curl" type="text" id="curl" /></label>
+    <label>Rotation: <input name="rotation" type="text" id="rotation" /></label>
+    <label>Twist: <input name="twist" type="text" id="twist" /></label>
+    <label>Color: <select name="color" id="color">
+      <option value="0">Random</option>
+      <option value="1">Rainbow</option>
+    </select></label>
+  </form>
+  <a href="#13:3:6:.5:90:0:0"><img src="/thumb/13-3-6-.5-90.png"></a>
+  <a href="#12:6:6:0:180:0:0"><img src="/thumb/12-6-6-0-180.png"></a>
+  <a href="#10:48:1:60:180:0:1"><img src="/thumb/10-48-1-60-180.png"></a>
+  <a href="#12:5:4:30:270:0:0"><img src="/thumb/12-5-4-30-270.png"></a>
+  <a href="#12:3:10:0:180:60"><img src="/thumb/12-3-10-0-180-60.png"></a>
+  <a href="#13:8:6:270:175:180:1"><img src="/thumb/13-8-6-270-175-180.png"></a>
+  <a href="#12:7:2:45:270:0:1"><img src="/thumb/12-7-2-45-270-0-1.png"></a>
+  
+</div>
+<canvas id="bgcanvas"></canvas>
+<script type="text/javascript" src="/jquery-2.0.3.js"></script>
+<script type="text/javascript" src="/fractal.js"></script>
+<script>
+  drawFractal();
+</script>
+</body>
+</html>
