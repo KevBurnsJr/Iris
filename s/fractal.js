@@ -113,7 +113,9 @@
     $(window).resize(function(){
         clearTimeout(bgtimeout);
         bgtimeout = setTimeout(function(){
-            reset();
+            elem.width = w = window.innerWidth;
+            elem.height = h = window.innerHeight;
+            window.cancelAnimationFrame(animationFrame);
             drawFractal();
         }, 500);
     });
