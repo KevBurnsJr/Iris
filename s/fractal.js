@@ -56,27 +56,17 @@
       ctx.rect(0,0,elem.width,elem.height);
       ctx.fillStyle="black";
       ctx.fill();
+      ctx.lineWidth = .3;
       if(animationFrame) {
         window.cancelAnimationFrame(animationFrame);
       }
 
       function drawLine(x1, y1, x2, y2, depth){
-        var s = 0;
-        var r = parseInt(rgb[0]);
-        var g = parseInt(rgb[1]);
-        var b = parseInt(rgb[2]);
-        var context = elem.getContext('2d');
-        context.lineWidth = .3;
-        drawPart = function(){
-          context.strokeStyle = "rgba("+r+","+g+","+b+","+.75+")";
-          context.beginPath();
-          context.moveTo(x1 + s*((x2-x1)), y1 + s*((y2-y1)));
-          s++;
-          context.lineTo(x1 + s*((x2-x1)), y1 + s*((y2-y1)));
-          context.closePath();
-          context.stroke();
-        };
-        drawPart();
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x1 + (x2-x1), y1 + (y2-y1));
+        ctx.closePath();
+        ctx.stroke();
       }
       function drawTree(x1, y1, angle, depth, dangle, length){
         var dangle = dangle > 0 ? dangle : (360 / n);
@@ -96,10 +86,12 @@
       var start = Date.now();
       for(i=0; i<n; i++) {
         rgb = HSLtoRGB([1, .75, .4]);
+        ctx.strokeStyle = "rgba("+parseInt(rgb[0])+","+parseInt(rgb[1])+","+parseInt(rgb[2])+","+.75+")";
         drawTree(w/2, h/2, i*(360/n) + (rotation/n),  depth_start);
       }
       for(i=depth_start; i > 0; i--) {
         rgb = HSLtoRGB([(i/depth_start), .75, .4]);
+        ctx.strokeStyle = "rgba("+parseInt(rgb[0])+","+parseInt(rgb[1])+","+parseInt(rgb[2])+","+.75+")";
         for(j in next[i]) {
           drawTree(next[i][j][0], next[i][j][1], next[i][j][2], next[i][j][3], next[i][j][4], next[i][j][5]);
         }
