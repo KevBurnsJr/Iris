@@ -1,13 +1,13 @@
 (function(){
     var animationFrame;
     var deg_to_rad = Math.PI / 180.0;
-    var depth_start = 9;
+    var depth_start = 10;
     var n = 6;
-    var zoom = 4;
+    var zoom = 5;
     var rotation = 0;
     var curl = 0;
     var twist = 0;
-    var a_curl = .22;
+    var a_curl = .1;
     var a_twist = 0;
     var next = {};
     var rgb;
@@ -53,60 +53,57 @@
     reset();
 
     var drawFractal = function() {
-      ctx.rect(0,0,elem.width,elem.height);
-      ctx.fillStyle="black";
-      ctx.fill();
-      ctx.lineWidth = .3;
-      if(animationFrame) {
-        window.cancelAnimationFrame(animationFrame);
-      }
-
-      function drawLine(x1, y1, x2, y2, depth){
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x1 + (x2-x1), y1 + (y2-y1));
-        ctx.closePath();
-        ctx.stroke();
-      }
-      function drawTree(x1, y1, angle, depth, dangle, length){
-        var dangle = dangle > 0 ? dangle : (360 / n);
-        var length = length > 0 ? length : elem.height/(zoom*n);
-        var dcurl = curl * (depth / depth_start);
-        if (depth != 0){
-          var x2 = x1 + (Math.cos(angle * deg_to_rad) * depth * length);
-          var y2 = y1 + (Math.sin(angle * deg_to_rad) * depth * length);
-          drawLine(x1, y1, x2, y2, depth);
-          next[depth - 1].push([x2, y2, angle - (dangle + dcurl) + twist, depth - 1, dangle, length]);
-          next[depth - 1].push([x2, y2, angle + (dangle + dcurl) + twist, depth - 1, dangle, length]);
+        ctx.rect(0,0,elem.width,elem.height);
+        ctx.fillStyle="black";
+        ctx.fill();
+        ctx.lineWidth = .4;
+        if(animationFrame) {
+            window.cancelAnimationFrame(animationFrame);
         }
-      }
-      for(i=0; i<depth_start; i++) {
-        next[i] = [];
-      }
-      var start = Date.now();
-      for(i=0; i<n; i++) {
-        rgb = HSLtoRGB([1, .75, .4]);
-        ctx.strokeStyle = "rgba("+parseInt(rgb[0])+","+parseInt(rgb[1])+","+parseInt(rgb[2])+","+.75+")";
-        drawTree(w/2, h/2, i*(360/n) + (rotation/n),  depth_start);
-      }
-      for(i=depth_start; i > 0; i--) {
-        rgb = HSLtoRGB([(i/depth_start), .75, .4]);
-        ctx.strokeStyle = "rgba("+parseInt(rgb[0])+","+parseInt(rgb[1])+","+parseInt(rgb[2])+","+.75+")";
-        for(j in next[i]) {
-          drawTree(next[i][j][0], next[i][j][1], next[i][j][2], next[i][j][3], next[i][j][4], next[i][j][5]);
+        function drawTree(x1, y1, angle, depth, dangle, length){
+            var dcurl = curl * (depth / depth_start);
+            var x2 = x1 + (Math.cos(angle * deg_to_rad) * depth * length);
+            var y2 = y1 + (Math.sin(angle * deg_to_rad) * depth * length);
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            if(depth>1) {
+                next[depth - 1].push([x2, y2, angle - (dangle + dcurl) + twist, depth - 1, dangle, length]);
+                next[depth - 1].push([x2, y2, angle + (dangle + dcurl) + twist, depth - 1, dangle, length]);
+            }
         }
-      }
+        for(i=0; i<depth_start; i++) {
+            next[i] = [];
+        }
+        var start = Date.now();
+        for(i=0; i<n; i++) {
+            rgb = HSLtoRGB([1, .8, .5]);
+            ctx.strokeStyle = "rgba("+parseInt(rgb[0])+","+parseInt(rgb[1])+","+parseInt(rgb[2])+","+.75+")";
+            ctx.beginPath();
+            drawTree(w/2, h/2, i*(360/n) + (rotation/n),  depth_start, 360 / n, elem.height/(zoom*n));
+            ctx.closePath();
+            ctx.stroke();
+        }
+        for(i=depth_start; i > 0; i--) {
+            rgb = HSLtoRGB([(i/depth_start), .8, .5]);
+            ctx.strokeStyle = "rgba("+parseInt(rgb[0])+","+parseInt(rgb[1])+","+parseInt(rgb[2])+","+.75+")";
+            ctx.beginPath();
+            for(j in next[i]) {
+                drawTree(next[i][j][0], next[i][j][1], next[i][j][2], next[i][j][3], next[i][j][4], next[i][j][5]);
+            }
+            ctx.closePath();
+            ctx.stroke();
+        }
 
-      curl  = (curl < 360*depth_start ? curl : curl - 360*depth_start) + a_curl;
-      twist = (twist < 360 ? twist : twist - 360) + a_twist;
+        curl  = (curl < 360*depth_start ? curl : curl - 360*depth_start) + a_curl;
+        twist = (twist < 360 ? twist : twist - 360) + a_twist;
 
-      animationFrame = window.requestAnimationFrame(drawFractal);
-      var now = Date.now();
-      if(fps_tick + 1000 < now) {
-          $('#fps').html(parseInt(1000/(now - last)) + " fps");
-          fps_tick = now;
-      }
-      last = now;
+        animationFrame = window.requestAnimationFrame(drawFractal);
+        var now = Date.now();
+        if(fps_tick + 1000 < now) {
+            $('#fps').html(parseInt(1000/(now - last)) + " fps");
+            fps_tick = now;
+        }
+        last = now;
     };
     var bgtimeout = null;
     $(window).resize(function(){
