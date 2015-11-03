@@ -1,14 +1,14 @@
 (function(){
     var animationFrame;
     var deg_to_rad = Math.PI / 180.0;
-    var depth_start = 7;
-    var n = 24;
-    var zoom = 1;
+    var depth_start = 9;
+    var n = 6;
+    var zoom = 4;
     var rotation = 0;
     var curl = 0;
     var twist = 0;
     var a_curl = .22;
-    var a_twist = .07;
+    var a_twist = 0;
     var next = {};
     var rgb;
     var elem = document.getElementById('bgcanvas');
