@@ -132,7 +132,7 @@
     window.onhashchange = function() {
         reset();
         bgtimeout = setTimeout(function(){
-            drawFractal();
+            window.location.reload();
         }, 500);
     };
     var HSLtoRGB = function (hsl) {
