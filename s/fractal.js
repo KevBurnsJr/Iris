@@ -105,8 +105,8 @@
         }
       }
 
-      curl  = (curl < 360*depth_start ? curl : 0) + a_curl;
-      twist = (twist < 360 ? twist : 0) + a_twist;
+      curl  = (curl < 360*depth_start ? curl : curl - 360*depth_start) + a_curl;
+      twist = (twist < 360 ? twist : twist - 360) + a_twist;
 
       animationFrame = window.requestAnimationFrame(drawFractal);
       var now = Date.now();
