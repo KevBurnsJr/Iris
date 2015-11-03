@@ -13,6 +13,7 @@
     var rgb;
     var elem = document.getElementById('bgcanvas');
     var ctx = elem.getContext('2d');
+    var last = fps_tick = Date.now();
 
     var reset = function(hashchange) {
         if(window.location.hash) {
@@ -108,6 +109,12 @@
       twist = (twist < 360 ? twist : 0) + a_twist;
 
       animationFrame = window.requestAnimationFrame(drawFractal);
+      var now = Date.now();
+      if(fps_tick + 1000 < now) {
+          $('#fps').html(parseInt(1000/(now - last)) + " fps");
+          fps_tick = now;
+      }
+      last = now;
     };
     var bgtimeout = null;
     $(window).resize(function(){

@@ -14,6 +14,7 @@
         #control input, #control select { margin-bottom: 10px; width: 60px; float: right; margin-left: 10px; }
         #control select { width: 80px; }
         #control h3 { color: #fff; margin: 0.5em 0; }
+        #fps { position: fixed; right: 0; bottom: 0; padding: 15px 20px 10px 15px; background: rgba(0,0,0,0.5); color: #fff; }
     </style>
 </head>
 <body>
@@ -29,6 +30,7 @@
     <label>Twist: <input name="a_twist" type="text" id="a_twist" /></label>
   </form>
 </div>
+<div id="fps"></div>
 <canvas id="bgcanvas"></canvas>
 <script type="text/javascript" src="/jquery-2.0.3.js"></script>
 <script type="text/javascript" src="/fractal.js"></script>
