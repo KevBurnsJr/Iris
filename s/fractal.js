@@ -78,7 +78,7 @@
 
     var drawFractal = function() {
         ctx.rect(0,0,elem.width,elem.height);
-        ctx.fillStyle="black";
+        ctx.fillStyle="rgba(0,0,0,0.4)";
         ctx.fill();
         ctx.lineWidth = .4;
         if(animationFrame) {
@@ -95,17 +95,12 @@
                 next[depth - 1].push([x2, y2, angle + (dangle + dcurl) + twist, depth - 1, dangle, length]);
             }
         }
-        for(i=0; i<depth_start; i++) {
+        for(i=1; i<=depth_start; i++) {
             next[i] = [];
         }
-        var start = Date.now();
+        var lines = 0;
         for(i=0; i<n; i++) {
-            rgb = HSLtoRGB([1, .8, .5]);
-            ctx.strokeStyle = "rgba("+parseInt(rgb[0])+","+parseInt(rgb[1])+","+parseInt(rgb[2])+","+.75+")";
-            ctx.beginPath();
-            drawTree(w/2, h/2, i*(360/n) + (rotation/n),  depth_start, 360 / n, elem.height/(zoom*n));
-            ctx.closePath();
-            ctx.stroke();
+            next[depth_start].push([w/2, h/2, i*(360/n) + (rotation/n),  depth_start, 360 / n, elem.height/(zoom*n)]);
         }
         for(i=depth_start; i > 0; i--) {
             rgb = HSLtoRGB([(i/depth_start), .8, .5]);
@@ -113,6 +108,7 @@
             ctx.beginPath();
             for(j in next[i]) {
                 drawTree(next[i][j][0], next[i][j][1], next[i][j][2], next[i][j][3], next[i][j][4], next[i][j][5]);
+                lines++;
             }
             ctx.closePath();
             ctx.stroke();
@@ -124,6 +120,7 @@
         animationFrame = window.requestAnimationFrame(drawFractal);
         var now = Date.now();
         if(fps_tick + 1000 < now) {
+            $('#lpf').html(lines + " lines");
             $('#fps').html(parseInt(1000/(now - last)) + " fps");
             fps_tick = now;
         }
