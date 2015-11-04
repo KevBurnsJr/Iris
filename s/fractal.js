@@ -57,9 +57,6 @@
         ctx.fillStyle="black";
         ctx.fill();
         ctx.lineWidth = .4;
-        if(animationFrame) {
-            window.cancelAnimationFrame(animationFrame);
-        }
         function drawTree(x1, y1, angle, depth, dangle, length){
             var dcurl = curl * (depth / depth_start);
             var x2 = x1 + (Math.cos(angle * deg_to_rad) * depth * length);
