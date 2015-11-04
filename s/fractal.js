@@ -38,6 +38,7 @@
     var elem = document.getElementById('bgcanvas');
     var ctx = elem.getContext('2d');
     var last = fps_tick = Date.now();
+    var rgb = [];
 
     var reset = function() {
         if(window.location.hash) {
@@ -71,57 +72,57 @@
         elem.width = w = window.innerWidth;
         elem.height = h = window.innerHeight;
 
+        for(i=depth_start; i > 0; i--) {
+            var c = HSLtoRGB([(i/depth_start), .8, .5]);
+            rgb[i] = "rgba("+parseInt(c[0])+","+parseInt(c[1])+","+parseInt(c[2])+",.75)";
+        }
+
         window.cancelAnimationFrame(animationFrame);
     }
 
-    reset();
-
     var drawFractal = function() {
+        animationFrame = window.requestAnimationFrame(drawFractal);
         ctx.rect(0,0,elem.width,elem.height);
         ctx.fillStyle="rgba(0,0,0,0.4)";
         ctx.fill();
         ctx.lineWidth = .4;
-        if(animationFrame) {
-            window.cancelAnimationFrame(animationFrame);
-        }
-        function drawTree(x1, y1, angle, depth, dangle, length){
-            var dcurl = curl * (depth / depth_start);
-            var x2 = x1 + (Math.cos(angle * deg_to_rad) * depth * length);
-            var y2 = y1 + (Math.sin(angle * deg_to_rad) * depth * length);
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            if(depth>1) {
-                next[depth - 1].push([x2, y2, angle - (dangle + dcurl) + twist, depth - 1, dangle, length]);
-                next[depth - 1].push([x2, y2, angle + (dangle + dcurl) + twist, depth - 1, dangle, length]);
-            }
-        }
-        for(i=1; i<=depth_start; i++) {
+        for(i = 1; i <= depth_start; i++) {
             next[i] = [];
         }
         var lines = 0;
-        for(i=0; i<n; i++) {
-            next[depth_start].push([w/2, h/2, i*(360/n) + (rotation/n),  depth_start, 360 / n, elem.height/(zoom*n)]);
+        for(i = 0; i < n; i++) {
+            next[depth_start].push([w/2, h/2, i*(360/n) + (rotation/n), depth_start, 360 / n, elem.height/(zoom*n)]);
         }
-        for(i=depth_start; i > 0; i--) {
-            rgb = HSLtoRGB([(i/depth_start), .8, .5]);
-            ctx.strokeStyle = "rgba("+parseInt(rgb[0])+","+parseInt(rgb[1])+","+parseInt(rgb[2])+","+.75+")";
+        for(i = depth_start; i > 0; i--) {
+            ctx.strokeStyle = rgb[i];
             ctx.beginPath();
             for(j in next[i]) {
-                drawTree(next[i][j][0], next[i][j][1], next[i][j][2], next[i][j][3], next[i][j][4], next[i][j][5]);
+                var x1     = next[i][j][0],
+                    y1     = next[i][j][1],
+                    angle  = next[i][j][2],
+                    depth  = next[i][j][3],
+                    dangle = next[i][j][4],
+                    length = next[i][j][5];
+                var dcurl = curl * (depth / depth_start);
+                var x2 = x1 + (Math.cos(angle * deg_to_rad) * depth * length);
+                var y2 = y1 + (Math.sin(angle * deg_to_rad) * depth * length);
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                if(depth>1) {
+                    next[depth - 1].push([x2, y2, angle - (dangle + dcurl) + twist, depth - 1, dangle, length]);
+                    next[depth - 1].push([x2, y2, angle + (dangle + dcurl) + twist, depth - 1, dangle, length]);
+                }
                 lines++;
             }
             ctx.closePath();
             ctx.stroke();
         }
-
         curl  = (curl < 360*depth_start ? curl : curl - 360*depth_start) + a_curl;
         twist = (twist < 360 ? twist : twist - 360) + a_twist;
-
-        animationFrame = window.requestAnimationFrame(drawFractal);
         var now = Date.now();
         if(fps_tick + 1000 < now) {
-            $('#lpf').html(lines + " lines");
-            $('#fps').html(parseInt(1000/(now - last)) + " fps");
+            $('#lpf').text(lines + " lines");
+            $('#fps').text(Math.round(1000/(now - last)) + " fps");
             fps_tick = now;
         }
         last = now;
@@ -134,7 +135,7 @@
             elem.height = h = window.innerHeight;
             window.cancelAnimationFrame(animationFrame);
             drawFractal();
-        }, 500);
+        }, 300);
     });
     $('#control').on('change', 'input,select', function(){
         clearTimeout(bgtimeout);
@@ -148,13 +149,13 @@
                 $('#a_twist').val()
             ];
             window.location.hash = parts.join(':');
-        }, 500);
+        }, 100);
     });
     window.onhashchange = function() {
         reset();
         bgtimeout = setTimeout(function(){
             window.location.reload();
-        }, 500);
+        }, 100);
     };
     var HSLtoRGB = function (hsl) {
         var h = hsl[0],
@@ -191,5 +192,7 @@
         }
         return [r * 0xFF, g * 0xFF, b * 0xFF];
     };
+
+    reset();
     drawFractal(true);
 })();
