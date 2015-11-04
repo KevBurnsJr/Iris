@@ -15,7 +15,7 @@
     var ctx = elem.getContext('2d');
     var last = fps_tick = Date.now();
 
-    var reset = function(hashchange) {
+    var reset = function() {
         if(window.location.hash) {
             var parts = window.location.hash.substr(1).split(':');
             depth_start = parts[0];
@@ -35,7 +35,7 @@
         rotation = Math.max(0, rotation);
         rotation = Math.min(360, rotation);
         twist = 0;
-        curl = 0;
+        curl = 1080;
 
         $('#depth:not(:focus)').val(depth_start);
         $('#n:not(:focus)').val(n);
@@ -136,39 +136,39 @@
         }, 500);
     };
     var HSLtoRGB = function (hsl) {
-      var h = hsl[0],
-        s = hsl[1],
-        l = hsl[2],
-        r, g, b,
-        hue2rgb = function (p, q, t){
-          if (t < 0) {
-            t += 1;
-          }
-          if (t > 1) {
-            t -= 1;
-          }
-          if (t < 1/6) {
-            return p + (q - p) * 6 * t;
-          }
-          if (t < 1/2) {
-            return q;
-          }
-          if (t < 2/3) {
-            return p + (q - p) * (2/3 - t) * 6;
-          }
-          return p;
-        };
-      if (s === 0) {
-        r = g = b = l; // achromatic
-      } else {
-        var
-        q = l < 0.5 ? l * (1 + s) : l + s - l * s,
-        p = 2 * l - q;
-        r = hue2rgb(p, q, h + 1/3);
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1/3);
-      }
-      return [r * 0xFF, g * 0xFF, b * 0xFF];
+        var h = hsl[0],
+            s = hsl[1],
+            l = hsl[2],
+            r, g, b,
+            hue2rgb = function (p, q, t){
+                if (t < 0) {
+                    t += 1;
+                }
+                if (t > 1) {
+                    t -= 1;
+                }
+                if (t < 1/6) {
+                    return p + (q - p) * 6 * t;
+                }
+                if (t < 1/2) {
+                    return q;
+                }
+                if (t < 2/3) {
+                    return p + (q - p) * (2/3 - t) * 6;
+                }
+                return p;
+            };
+        if (s === 0) {
+            r = g = b = l; // achromatic
+        } else {
+            var
+            q = l < 0.5 ? l * (1 + s) : l + s - l * s,
+            p = 2 * l - q;
+            r = hue2rgb(p, q, h + 1/3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1/3);
+        }
+        return [r * 0xFF, g * 0xFF, b * 0xFF];
     };
     drawFractal(true);
 })();
