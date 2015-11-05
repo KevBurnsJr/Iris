@@ -106,13 +106,15 @@
                 var dcurl = curl * (depth / depth_start);
                 var x2 = x1 + (Math.cos(angle * deg_to_rad) * depth * length);
                 var y2 = y1 + (Math.sin(angle * deg_to_rad) * depth * length);
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
+                if(i<depth_start&&!(((x1 < 0 || x1 > w) || (y1 < 0 || y1 > h)) && ((x2 < 0 || x2 > w) || (y2 < 0 || y2 > h)) && (((x1+x2/2) < 0 || (x1+x2/2) > w) || ((y1+y2)/2 < 0 || (y1+y2)/2 > h)))) {
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    lines++;
+                }
                 if(depth>1) {
                     next[depth - 1].push([x2, y2, angle - (dangle + dcurl) + twist, depth - 1, dangle, length]);
                     next[depth - 1].push([x2, y2, angle + (dangle + dcurl) + twist, depth - 1, dangle, length]);
                 }
-                lines++;
             }
             ctx.closePath();
             ctx.stroke();
