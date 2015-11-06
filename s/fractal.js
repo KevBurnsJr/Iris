@@ -123,7 +123,7 @@
         twist = (twist < 360 ? twist : twist - 360) + a_twist;
         var now = Date.now();
         if(fps_tick + 1000 < now) {
-            $('#lpf').text(lines + " lines");
+            $('#lpf').text(lines + " lines ("+Math.round((lines * (1000/(now - last)))/1000)+" klps)");
             $('#fps').text(Math.round(1000/(now - last)) + " fps");
             fps_tick = now;
         }
