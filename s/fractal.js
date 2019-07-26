@@ -61,7 +61,7 @@
 
         depth_start = Math.min(15, depth_start);
         depth_start = Math.max(1, depth_start);
-        zoom = Math.min(10, zoom);
+        zoom = Math.min(15, zoom);
         zoom = Math.max(1, zoom);
         n = Math.max(1, n);
         n = Math.min(48, n);
@@ -120,8 +120,9 @@
         if (e.deltaY > 0) {
             zoom++;
         }
-        zoom = Math.min(10, zoom);
+        zoom = Math.min(15, zoom);
         zoom = Math.max(1, zoom);
+        sethash(false);
     });
 
     var drawFractal = function() {
