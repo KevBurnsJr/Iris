@@ -88,6 +88,9 @@
 
     var clickpoint = [];
     document.addEventListener('mousedown', function(e){
+        if (e.target.nodeName != "CANVAS") {
+          return;
+        }
         clickpoint = [e.offsetX, e.offsetY];
         animate = false;
         // drawFractal();
@@ -96,7 +99,7 @@
         if (!clickpoint.length) {
             return
         }
-        curl += (clickpoint[0] - e.offsetX) * (e.shiftKey?1:0.1);
+        curl -= (clickpoint[0] - e.offsetX) * (e.shiftKey?1:0.1);
         clickpoint = [e.offsetX, e.offsetY];
     });
     document.addEventListener('mouseup', function(e){
@@ -109,6 +112,16 @@
           pause = !pause;
           sethash(false);
         }
+    });
+    document.addEventListener('wheel', function(e) {
+        if (e.deltaY < 0) {
+            zoom--;
+        }
+        if (e.deltaY > 0) {
+            zoom++;
+        }
+        zoom = Math.min(10, zoom);
+        zoom = Math.max(1, zoom);
     });
 
     var drawFractal = function() {
@@ -172,12 +185,8 @@
             drawFractal();
         }, 300);
     });
-    $('#control').on('change', 'input,select', function(){
-        clearTimeout(bgtimeout);
-        bgtimeout = setTimeout(function(){setHash(true);}, 100);
-    });
     var hashUpdateRefresh = true;
-    function sethash(refresh) {
+    var sethash = function(refresh) {
       hashUpdateRefresh = refresh;
       var parts = [
           $('#depth').val(),
@@ -191,7 +200,11 @@
           pause ? '1' : '0'
       ];
       window.location.hash = parts.join(':');
-    }
+    };
+    $('#control').on('change', 'input,select', function(){
+        sethash(true);
+        reset();
+    });
     window.onhashchange = function() {
         if (!hashUpdateRefresh) {
             hashUpdateRefresh = true;
