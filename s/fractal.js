@@ -39,8 +39,13 @@
     var ctx = elem.getContext('2d');
     var last = fps_tick = Date.now();
     var rgb = [];
+    var pause = false;
+    var animate = true;
 
     var reset = function() {
+        twist = 0;
+        curl = 1080;
+
         if(window.location.hash) {
             var parts = window.location.hash.substr(1).split(':');
             depth_start = parts[0];
@@ -49,6 +54,9 @@
             rotation    = parts[3];
             a_curl      = parseFloat(parts[4]);
             a_twist     = parseFloat(parts[5]);
+            curl        = parseFloat(parts[6]);
+            twist       = parseFloat(parts[7]);
+            pause       = parts[8] == 1;
         }
 
         depth_start = Math.min(15, depth_start);
@@ -59,8 +67,6 @@
         n = Math.min(48, n);
         rotation = Math.max(0, rotation);
         rotation = Math.min(360, rotation);
-        twist = 0;
-        curl = 1080;
 
         $('#depth:not(:focus)').val(depth_start);
         $('#n:not(:focus)').val(n);
@@ -79,6 +85,31 @@
 
         window.cancelAnimationFrame(animationFrame);
     }
+
+    var clickpoint = [];
+    document.addEventListener('mousedown', function(e){
+        clickpoint = [e.offsetX, e.offsetY];
+        animate = false;
+        // drawFractal();
+    });
+    document.addEventListener('mousemove', function(e){
+        if (!clickpoint.length) {
+            return
+        }
+        curl += (clickpoint[0] - e.offsetX) * (e.shiftKey?1:0.1);
+        clickpoint = [e.offsetX, e.offsetY];
+    });
+    document.addEventListener('mouseup', function(e){
+        clickpoint = [];
+        animate = true;
+        sethash(false);
+    });
+    document.addEventListener('keydown', function(e){
+        if (e.key == " ") {
+          pause = !pause;
+          sethash(false);
+        }
+    });
 
     var drawFractal = function() {
         animationFrame = window.requestAnimationFrame(drawFractal);
@@ -119,8 +150,10 @@
             ctx.closePath();
             ctx.stroke();
         }
-        curl  = (curl < 360*depth_start ? curl : curl - 360*depth_start) + a_curl;
-        twist = (twist < 360 ? twist : twist - 360) + a_twist;
+        if (animate && !pause) {
+            curl  = (curl < 360*depth_start ? curl : curl - 360*depth_start) + a_curl;
+            twist = (twist < 360 ? twist : twist - 360) + a_twist;
+        }
         var now = Date.now();
         if(fps_tick + 1000 < now) {
             $('#lpf').text(lines + " lines ("+Math.round((lines * (1000/(now - last)))/1000)+" klps)");
@@ -141,19 +174,29 @@
     });
     $('#control').on('change', 'input,select', function(){
         clearTimeout(bgtimeout);
-        bgtimeout = setTimeout(function(){
-            var parts = [
-                $('#depth').val(),
-                $('#n').val(),
-                $('#zoom').val(),
-                $('#rotation').val(),
-                $('#a_curl').val(),
-                $('#a_twist').val()
-            ];
-            window.location.hash = parts.join(':');
-        }, 100);
+        bgtimeout = setTimeout(function(){setHash(true);}, 100);
     });
+    var hashUpdateRefresh = true;
+    function sethash(refresh) {
+      hashUpdateRefresh = refresh;
+      var parts = [
+          $('#depth').val(),
+          $('#n').val(),
+          $('#zoom').val(),
+          $('#rotation').val(),
+          $('#a_curl').val(),
+          $('#a_twist').val(),
+          Math.ceil(curl*10)/10,
+          Math.ceil(twist*10)/10,
+          pause ? '1' : '0'
+      ];
+      window.location.hash = parts.join(':');
+    }
     window.onhashchange = function() {
+        if (!hashUpdateRefresh) {
+            hashUpdateRefresh = true;
+            return;
+        }
         reset();
         bgtimeout = setTimeout(function(){
             window.location.reload();
