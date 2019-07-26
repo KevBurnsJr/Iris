@@ -84,6 +84,7 @@
         }
 
         window.cancelAnimationFrame(animationFrame);
+        drawFractal(true);
     }
 
     var clickpoint = [];
@@ -105,12 +106,12 @@
     document.addEventListener('mouseup', function(e){
         clickpoint = [];
         animate = true;
-        sethash(false);
+        sethash();
     });
     document.addEventListener('keydown', function(e){
         if (e.key == " ") {
           pause = !pause;
-          sethash(false);
+          sethash();
         }
     });
     document.addEventListener('wheel', function(e) {
@@ -122,7 +123,8 @@
         }
         zoom = Math.min(15, zoom);
         zoom = Math.max(1, zoom);
-        sethash(false);
+        $('#zoom').val(zoom);
+        sethash();
     });
 
     var drawFractal = function() {
@@ -186,15 +188,13 @@
             drawFractal();
         }, 300);
     });
-    var hashUpdateRefresh = true;
-    var sethash = function(refresh) {
-      hashUpdateRefresh = refresh;
+    var sethash = function() {
       var parts = [
-          $('#depth').val(),
-          $('#n').val(),
-          $('#zoom').val(),
-          $('#rotation').val(),
-          $('#a_curl').val(),
+          $('#depth').val() >= 1 ? $('#depth').val() : 8,
+          $('#n').val() >= 1 ? $('#n').val() : 6,
+          $('#zoom').val() >= 1 ? $('#zoom').val() : 5,
+          $('#rotation').val() >= 1 ? $('#rotation').val() : 0,
+          $('#a_curl').val() > 0 || $('#a_curl').val() < 0 ? $('#a_curl').val() : 0.1,
           $('#a_twist').val(),
           Math.ceil(curl*10)/10,
           Math.ceil(twist*10)/10,
@@ -203,18 +203,10 @@
       window.location.hash = parts.join(':');
     };
     $('#control').on('change', 'input,select', function(){
-        sethash(true);
-        reset();
+        sethash();
     });
     window.onhashchange = function() {
-        if (!hashUpdateRefresh) {
-            hashUpdateRefresh = true;
-            return;
-        }
         reset();
-        bgtimeout = setTimeout(function(){
-            window.location.reload();
-        }, 100);
     };
     var HSLtoRGB = function (hsl) {
         var h = hsl[0],
@@ -253,5 +245,4 @@
     };
 
     reset();
-    drawFractal(true);
 })();
